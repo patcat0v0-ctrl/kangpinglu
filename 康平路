@@ -2,12 +2,13 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>康平路一家亲</title>
+<title>康平论坛</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
 body {
     font-family: Arial;
-    background: #f5f5f5;
+    background: #f2f2f2;
     margin: 0;
 }
 
@@ -27,6 +28,22 @@ header {
     border-radius: 10px;
 }
 
+textarea {
+    width: 100%;
+    height: 80px;
+    margin-top: 10px;
+}
+
+button {
+    margin-top: 10px;
+    padding: 10px;
+    width: 100%;
+    background: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
 .post {
     border-bottom: 1px solid #ddd;
     padding: 10px 0;
@@ -36,29 +53,56 @@ header {
     font-size: 12px;
     color: gray;
 }
-
 </style>
 </head>
 
 <body>
 
 <header>
-康平路一家亲（匿名论坛）
+康平匿名论坛（只有你可以发帖）
 </header>
 
 <div class="container">
 
-<div class="post">
-    <div class="floor">1楼</div>
-    <div>欢迎来到论坛，这里可以讨论任何事情。</div>
-</div>
+<textarea id="content" placeholder="输入你要发的内容..."></textarea>
+<button onclick="post()">发布</button>
 
-<div class="post">
-    <div class="floor">2楼</div>
-    <div>目前这是测试页面，后面会加发帖功能。</div>
-</div>
+<div id="posts"></div>
 
 </div>
+
+<script>
+let count = 0;
+
+// 读取本地存储
+let data = JSON.parse(localStorage.getItem("posts") || "[]");
+
+function render(){
+    let box = document.getElementById("posts");
+    box.innerHTML = "";
+    
+    data.forEach((p, i) => {
+        box.innerHTML += `
+        <div class="post">
+            <div class="floor">${i+1}楼</div>
+            <div>${p}</div>
+        </div>`;
+    });
+}
+
+function post(){
+    let text = document.getElementById("content").value;
+    if(text.trim() === "") return;
+
+    data.push(text);
+    localStorage.setItem("posts", JSON.stringify(data));
+
+    document.getElementById("content").value = "";
+    render();
+}
+
+render();
+</script>
 
 </body>
 </html>
