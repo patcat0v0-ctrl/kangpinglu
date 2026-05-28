@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>康平论坛</title>
+<title>康平论坛 Pro</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -53,18 +53,29 @@ button {
     font-size: 12px;
     color: gray;
 }
+
+.owner {
+    color: red;
+    font-weight: bold;
+}
+.delete {
+    color: red;
+    cursor: pointer;
+    font-size: 12px;
+    float: right;
+}
 </style>
 </head>
 
 <body>
 
 <header>
-康平匿名论坛（只有你可以发帖）
+康平匿名论坛 Pro（升级版）
 </header>
 
 <div class="container">
 
-<textarea id="content" placeholder="输入你要发的内容..."></textarea>
+<textarea id="content" placeholder="输入内容..."></textarea>
 <button onclick="post()">发布</button>
 
 <div id="posts"></div>
@@ -72,20 +83,27 @@ button {
 </div>
 
 <script>
-let count = 0;
+// 你可以改成你的名字（楼主标识）
+const OWNER = "admin";
 
-// 读取本地存储
 let data = JSON.parse(localStorage.getItem("posts") || "[]");
 
 function render(){
     let box = document.getElementById("posts");
     box.innerHTML = "";
-    
+
     data.forEach((p, i) => {
         box.innerHTML += `
         <div class="post">
-            <div class="floor">${i+1}楼</div>
-            <div>${p}</div>
+            <div class="floor">
+                ${i+1}楼
+                <span class="delete" onclick="del(${i})">删除</span>
+            </div>
+
+            <div>
+                ${p.author === OWNER ? '<span class="owner">[楼主]</span>' : ''}
+                ${p.text}
+            </div>
         </div>`;
     });
 }
@@ -94,10 +112,20 @@ function post(){
     let text = document.getElementById("content").value;
     if(text.trim() === "") return;
 
-    data.push(text);
+    data.push({
+        text: text,
+        author: OWNER
+    });
+
     localStorage.setItem("posts", JSON.stringify(data));
 
     document.getElementById("content").value = "";
+    render();
+}
+
+function del(i){
+    data.splice(i, 1);
+    localStorage.setItem("posts", JSON.stringify(data));
     render();
 }
 
